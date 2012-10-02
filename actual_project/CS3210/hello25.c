@@ -4,6 +4,8 @@
 #include <linux/cdev.h>
 #include <linux/proc_fs.h>
 #include <linux/string.h>
+#include <linux/slab.h>
+#include <linux/vmalloc.h>
 
 #define MAX_PROC_SIZE 1000
 
@@ -33,13 +35,13 @@ struct processInfo{
 
 struct processInfo *headProcess;
 
-struct processInfo addProcess(struct task_struct* task){
+struct processInfo* addProcess(struct task_struct* task){
 
 	struct processInfo *next;
 	
 	//check if there are any processes
 	if (!headProcess){
-		headProcess = vmalloc(sizeof(struct processInfo));
+		headProcess = (struct processInfo*)vmalloc(sizeof(struct processInfo));
 	}
 	//Error if fails
 	if (!headProcess){
@@ -52,11 +54,11 @@ struct processInfo addProcess(struct task_struct* task){
 	}
 
 	//Initialize content
-	next->nextProcess = vmalloc(sizeof(struct processInfo));
+	next->nextProcess = (struct processInfo*)vmalloc(sizeof(struct processInfo));
 	next->nextProcess->tgid = task->tgid;
 	next->nextProcess->numThreads = 1;
 	next->nextProcess->seed = A_PRNG;
-	next->nextProcess->nextProcess = NULL:
+	next->nextProcess->nextProcess = NULL;
 	next->nextProcess->headThread = NULL;
 
 	return (next->nextProcess);
