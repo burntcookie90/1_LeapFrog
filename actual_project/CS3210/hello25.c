@@ -19,6 +19,7 @@ static unsigned long long C_PRNG = 2147483647;
 static char proc_data[MAX_PROC_SIZE];
 static struct proc_dir_entry *proc_write_entry;
 
+long nextRandomGen(long prevRandom, int numThreads);
 /*void create_new_proc_entry();*/
 
 struct threadInfo{
@@ -30,7 +31,7 @@ struct threadInfo{
 struct processInfo{
 	pid_t tgid;
 	int numThreads;
-	long long seed;
+	long seed;
 	struct processInfo* nextProcess;
 	struct threadInfo *headThread;
 };
@@ -65,10 +66,10 @@ struct processInfo* addProcess(struct task_struct* task){
 	next->nextProcess->headThread = NULL;
 	next->nextProcess->numThreads = 1;
 	
-	taskNext = task->next_task(task);
+	taskNext = next_task(task);
 	while (taskNext&&taskNext!=next){
 		next->nextProcess->numThreads++;
-		taskNext = taskNext->next_task(taskNext);
+		taskNext = next_task(taskNext);
 	}
 
 	return (next->nextProcess);
@@ -79,11 +80,12 @@ struct threadInfo* addThread(struct processInfo* parentProcess, struct task_stru
 	
 	struct threadInfo *next;
 	int threadNum = 1;
+	int thread = 0;
 
 	//check if there are any processes
 	if (!(parentProcess->headThread)){
 		parentProcess->headThread = vmalloc(sizeof(struct threadInfo));
-	}task
+	}
 	//Error if fails
 	if (!parentProcess->headThread){
 		return -EFAULT;
@@ -99,11 +101,11 @@ struct threadInfo* addThread(struct processInfo* parentProcess, struct task_stru
 	//Initialize content
 	next->nextThread = vmalloc(sizeof(struct threadInfo));
 	next->nextThread->pid = task->tgid;
-	next->nextThread->prevRandom = 0;
+	next->nextThread->nextRandom = 0;
 	next->nextThread->nextThread = NULL;
 
 
-	next->nextProcess->nextRandom = nextRandomGen(curProcess->seed, thread)	
+	next->nextThread->nextRandom = nextRandomGen(parentProcess->seed, thread);
 
 	return (next->nextThread);
 }
@@ -179,8 +181,8 @@ int read_proc(char *buf,char **start,off_t offset,int count,int *eof,void *data 
 	if (curThread!=NULL){
 		curThread=addThread(curProcess,current);		
 	}
-	curThread->prevRandom = nextRandomGen(curThread->prevRandom, curProcess->numThreads);
-	len = sprintf(outputBuffer, "%ld", curThread->prevRandom);
+	curThread->nextRandom = nextRandomGen(curThread->nextRandom, curProcess->numThreads);
+	len = sprintf(outputBuffer, "%ld", curThread->nextRandom);
 
 	if(copy_to_user(buf, outputBuffer, len)){
 		return -EFAULT;	
