@@ -65,10 +65,10 @@ struct processInfo* addProcess(struct task_struct* task){
 	next->nextProcess->headThread = NULL;
 	next->nextProcess->numThreads = 1;
 	
-	taskNext = task->next_task;
+	taskNext = task->next_task(task);
 	while (taskNext&&taskNext!=next){
 		next->nextProcess->numThreads++;
-		taskNext = taskNext->next_task;
+		taskNext = taskNext->next_task(taskNext);
 	}
 
 	return (next->nextProcess);
