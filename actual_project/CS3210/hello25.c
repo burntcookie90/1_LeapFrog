@@ -2,7 +2,7 @@
 #include <linux/kernel.h>
 #include <asm/uaccess.h>
 #include <linux/cdev.h>
-#include <stdio.h>
+#include <linux/sched.h>
 #include <linux/proc_fs.h>
 #include <linux/string.h>
 #include <linux/slab.h>
@@ -86,9 +86,9 @@ struct threadInfo addThread(struct processInfo* parentProcess, struct task_struc
 
 	//Initialize content
 	next->nextThread = vmalloc(sizeof(struct threadInfo));
-	next->nextProcess->pid = task->tgid;
-	next->nextProcess->prevRandom = 0;
-	next->nextProcess->nextThread = NULL;
+	next->nextThread->pid = task->tgid;
+	next->nextThread->prevRandom = 0;
+	next->nextThread->nextThread = NULL;
 
 	return (next->nextThread);
 }
