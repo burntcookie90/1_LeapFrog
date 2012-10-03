@@ -9,7 +9,7 @@
 #include <linux/vmalloc.h>
 
 #define MAX_PROC_SIZE 1000
-
+#define DEBUG 1
 
 static unsigned long long A_PRNG = 764261123;
 /*static unsigned long long B_PRNG = 0;*/
@@ -40,14 +40,17 @@ struct processInfo *headProcess;
 
 struct processInfo* addProcess(struct task_struct* task){
 
+	if(DEBUG) printk("Entering addProcess \n");
 	struct processInfo *next;
 	struct task_struct* taskNext;
 	//check if there are any processes
 	if (!headProcess){
+			printk("Setting head process\n");
 		headProcess = (struct processInfo*)vmalloc(sizeof(struct processInfo));
 	}
 	//Error if fails
 	if (!headProcess){
+			printk("Still no head process, sending EFAULT\n");
 		return -EFAULT;
 	}
 
@@ -59,18 +62,22 @@ struct processInfo* addProcess(struct task_struct* task){
 	
 
 	//Initialize content
+	if(DEBUG) printk("Initilializing content\n");
 	next->nextProcess = (struct processInfo*)vmalloc(sizeof(struct processInfo));
+	if(DEBUG) printk("vmallocing\n");
 	next->nextProcess->tgid = task->tgid;
 	next->nextProcess->seed = A_PRNG;
 	next->nextProcess->nextProcess = NULL;
 	next->nextProcess->headThread = NULL;
 	next->nextProcess->numThreads = 1;
+	if(DEBUG) printk("Initilialized content\n");
 	
 	taskNext = next_task(task);
 	while (taskNext&&taskNext!=next){
 		next->nextProcess->numThreads++;
 		taskNext = next_task(taskNext);
 	}
+	if(DEBUG) printk("Exiting addProcess\n");
 
 	return (next->nextProcess);
 	
@@ -168,7 +175,7 @@ int read_proc(char *buf,char **start,off_t offset,int count,int *eof,void *data 
 
 	//Find if current process exists; if not create it
 	curProcess = findProcess(current);
-	if (curProcess!=NULL){
+	if (curProcess==NULL){
 		curProcess=addProcess(current);
 		curProcess->seed = A_PRNG;		
 	}else{
@@ -178,7 +185,7 @@ int read_proc(char *buf,char **start,off_t offset,int count,int *eof,void *data 
 
 	//Find if current thread exists; if not create it
 	curThread = findThread(curProcess,current);
-	if (curThread!=NULL){
+	if (curThread==NULL){
 		curThread=addThread(curProcess,current);		
 	}
 	curThread->nextRandom = nextRandomGen(curThread->nextRandom, curProcess->numThreads);
@@ -193,6 +200,7 @@ int read_proc(char *buf,char **start,off_t offset,int count,int *eof,void *data 
 
 int write_proc(struct file *file,const char *buf,int count,void *data )
 {
+	if(DEBUG) 	printk("Entering write_proc\n");
 
 	char bufCopy[1001];
 	long seed = 0;
@@ -226,7 +234,7 @@ int write_proc(struct file *file,const char *buf,int count,void *data )
 
 	//Find if current process exists; if not create it
 	curProcess = findProcess(current);
-	if (curProcess!=NULL){
+	if (curProcess==NULL){
 		curProcess=addProcess(current);
 		curProcess->seed = seed;		
 	}else{
@@ -235,9 +243,12 @@ int write_proc(struct file *file,const char *buf,int count,void *data )
 
 	//Find if current thread exists; if not create it
 	curThread = findThread(curProcess,current);
-	if (curThread!=NULL){
+	if (curThread==NULL){
 		curThread=addThread(curProcess,current);		
 	}
+
+	if(DEBUG) printk("Exiting write proc\n");
+	memcpy(proc_data,bufCopy,count);
 
 	return count;
 
@@ -246,7 +257,7 @@ int write_proc(struct file *file,const char *buf,int count,void *data )
 void create_new_proc_entry(void)
 {
 
-	proc_write_entry = create_proc_entry("proc_entry",0666,NULL);
+	proc_write_entry = create_proc_entry("doop_entry",0666,NULL);
 	if(!proc_write_entry) {
 	    printk(KERN_INFO "Error creating proc entry");
 	    return -ENOMEM;

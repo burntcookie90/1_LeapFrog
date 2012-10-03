@@ -1,6 +1,6 @@
 
 ifneq ($(KERNELRELEASE),) 
-   obj-m := lfprng.o
+   obj-m := lfprng5.o
 else 
 
 KERNELDIR ?= /lib/modules/$(shell uname -r)/build 
