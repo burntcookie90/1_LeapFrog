@@ -1,7 +1,8 @@
-#include <linux/module.h>
+#include <linux/module.h> 
 #include <linux/kernel.h>
 #include <asm/uaccess.h>
 #include <linux/cdev.h>
+#include <linux/sched.h>
 #include <linux/proc_fs.h>
 #include <linux/string.h>
 #include <linux/slab.h>
@@ -11,13 +12,14 @@
 
 
 static unsigned long long A_PRNG = 764261123;
-static unsigned long long B_PRNG = 0;
+/*static unsigned long long B_PRNG = 0;*/
 static unsigned long long C_PRNG = 2147483647;
 
 //For Testing
 static char proc_data[MAX_PROC_SIZE];
 static struct proc_dir_entry *proc_write_entry;
 
+/*void create_new_proc_entry();*/
 
 struct threadInfo{
 	pid_t pid;
@@ -73,7 +75,7 @@ struct processInfo* addProcess(struct task_struct* task){
 	
 }
 
-struct threadInfo addThread(struct processInfo* parentProcess, struct task_struct* task){
+struct threadInfo* addThread(struct processInfo* parentProcess, struct task_struct* task){
 	
 	struct threadInfo *next;
 	int threadNum = 1;
@@ -96,9 +98,9 @@ struct threadInfo addThread(struct processInfo* parentProcess, struct task_struc
 
 	//Initialize content
 	next->nextThread = vmalloc(sizeof(struct threadInfo));
-	next->nextProcess->pid = task->tgid;
-	next->nextProcess->nextRandom = 0;
-	next->nextProcess->nextThread = NULL;
+	next->nextThread->pid = task->tgid;
+	next->nextThread->prevRandom = 0;
+	next->nextThread->nextThread = NULL;
 
 
 	next->nextProcess->nextRandom = nextRandomGen(curProcess->seed, thread)	
@@ -106,7 +108,7 @@ struct threadInfo addThread(struct processInfo* parentProcess, struct task_struc
 	return (next->nextThread);
 }
 
-struct processInfo findProcess(struct task_struct* task){
+struct processInfo* findProcess(struct task_struct* task){
 
 	struct processInfo *next = NULL;
 	
@@ -118,11 +120,11 @@ struct processInfo findProcess(struct task_struct* task){
 		}	
 	}
 	//if process is not found then return NULL
-	return (NULL);
+	return NULL;
 	
 }
 
-struct threadInfo findThread(struct processInfo* parentProcess, struct task_struct* task){
+struct threadInfo* findThread(struct processInfo* parentProcess, struct task_struct* task){
 	
 	struct threadInfo *next;
 	
@@ -159,26 +161,28 @@ int read_proc(char *buf,char **start,off_t offset,int count,int *eof,void *data 
 	char outputBuffer[1001];
 	int len = 0;
 
+	struct processInfo* curProcess;
+	struct threadInfo* curThread;
+
 	//Find if current process exists; if not create it
 	curProcess = findProcess(current);
 	if (curProcess!=NULL){
 		curProcess=addProcess(current);
 		curProcess->seed = A_PRNG;		
 	}else{
-		printk("Process already exists. Process not being reseeded.")
+		printk("Process already exists. Process not being reseeded.");
 	}
 
+
 	//Find if current thread exists; if not create it
-	curThread = findThread(current);
+	curThread = findThread(curProcess,current);
 	if (curThread!=NULL){
 		curThread=addThread(curProcess,current);		
 	}
-	//Get next random number
-	len = sprintf(outputbuffer, "%ld", curThread->nextRandom);
-	//Calulate the random number for next call
-	curThread->nextRandom = nextRandomGen(curThread->nextRandom, curProcess->numThreads)
-	//Give random number to user
-	if(copy_to_user(buf, outputBufferm, len)){
+	curThread->prevRandom = nextRandomGen(curThread->prevRandom, curProcess->numThreads);
+	len = sprintf(outputBuffer, "%ld", curThread->prevRandom);
+
+	if(copy_to_user(buf, outputBuffer, len)){
 		return -EFAULT;	
 	}
 
@@ -190,10 +194,10 @@ int write_proc(struct file *file,const char *buf,int count,void *data )
 
 	char bufCopy[1001];
 	long seed = 0;
-	int numThreads = 0;
-	int len = 0;
-	struct processInfo curProcess = NULL;
-	struct threadInfo curThread = NULL;	
+	/*int numThreads = 0;*/
+	/*int len = 0;*/
+	struct processInfo* curProcess;
+	struct threadInfo* curThread;
 
 	//Nothing to write
 	if (count==0){
@@ -214,7 +218,7 @@ int write_proc(struct file *file,const char *buf,int count,void *data )
 	//Pull out numbers from user
 	sscanf(bufCopy, "%lu",&seed);
 	//If no seed chosen	
-	if (seed=0){
+	if (seed==0){
 		seed = A_PRNG;
 	}
 
@@ -224,11 +228,11 @@ int write_proc(struct file *file,const char *buf,int count,void *data )
 		curProcess=addProcess(current);
 		curProcess->seed = seed;		
 	}else{
-		printk("Process already exists. Process not being reseeded.")
+		printk("Process already exists. Process not being reseeded.");
 	}
 
 	//Find if current thread exists; if not create it
-	curThread = findThread(current);
+	curThread = findThread(curProcess,current);
 	if (curThread!=NULL){
 		curThread=addThread(curProcess,current);		
 	}
@@ -237,12 +241,11 @@ int write_proc(struct file *file,const char *buf,int count,void *data )
 
 }
 
-void create_new_proc_entry()
+void create_new_proc_entry(void)
 {
 
 	proc_write_entry = create_proc_entry("proc_entry",0666,NULL);
-	if(!proc_write_entry)
-	      {
+	if(!proc_write_entry) {
 	    printk(KERN_INFO "Error creating proc entry");
 	    return -ENOMEM;
 	    }
