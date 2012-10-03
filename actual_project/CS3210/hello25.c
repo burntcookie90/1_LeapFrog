@@ -160,8 +160,12 @@ int read_proc(char *buf,char **start,off_t offset,int count,int *eof,void *data 
 	if (curThread!=NULL){
 		curThread=addThread(curProcess,current);		
 	}
-	curThread->prevRandom = nextRandomGen(curThread->prevRandom, )
-	len = sprintf(outputbuffer, "%ld", curProcess->numThreads);
+	curThread->prevRandom = nextRandomGen(curThread->prevRandom, curProcess->numThreads)
+	len = sprintf(outputbuffer, "%ld", curThread->prevRandom);
+
+	if(copy_to_user(buf, outputBufferm, len)){
+		return -EFAULT;	
+	}
 
 	return len;
 }
