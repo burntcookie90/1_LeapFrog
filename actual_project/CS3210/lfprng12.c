@@ -10,6 +10,7 @@
 
 #define MAX_PROC_SIZE 1000
 #define DEBUG 1
+#define PROC_FILENAME "bleep_entry"
 
 static unsigned long long A_PRNG = 764261123;
 /*static unsigned long long B_PRNG = 0;*/
@@ -40,13 +41,33 @@ struct processInfo *headProcess;
 
 struct processInfo* addProcess(struct task_struct* task){
 
-	if(DEBUG) printk("Entering addProcess \n");
 	struct processInfo *next;
 	struct task_struct* taskNext;
+	if(DEBUG) printk("Entering addProcess \n");
 	//check if there are any processes
 	if (!headProcess){
 			printk("Setting head process\n");
-		headProcess = (struct processInfo*)vmalloc(sizeof(struct processInfo));
+			headProcess = (struct processInfo*)vmalloc(sizeof(struct processInfo));
+			//Initialize content
+			if(DEBUG) printk("Initilializing head process\n");
+			headProcess= (struct processInfo*)vmalloc(sizeof(struct processInfo));
+			if(DEBUG) printk("vmallocing head process\n");
+			headProcess->tgid = task->tgid;
+			headProcess->seed = A_PRNG;
+			headProcess->nextProcess = NULL;
+			headProcess->headThread = NULL;
+			headProcess->numThreads = 1;
+			if(DEBUG) printk("Initilialized headprocess\n");
+			
+			taskNext = next_task(task);
+			while (taskNext&&(taskNext->pid!=task->pid)){
+					if(DEBUG) printk("In while loop for head process, numThreads:%d task->tgid:%d task->pid:%d taskNext->pid:%d\n",headProcess->numThreads,task->tgid,task->pid,taskNext->pid);
+					headProcess->numThreads++;
+					taskNext = next_task(taskNext);
+			}
+			if(DEBUG) printk("Exiting head process initialization\n");
+
+			return (headProcess);
 	}
 	//Error if fails
 	if (!headProcess){
@@ -73,9 +94,10 @@ struct processInfo* addProcess(struct task_struct* task){
 	if(DEBUG) printk("Initilialized content\n");
 	
 	taskNext = next_task(task);
-	while (taskNext&&taskNext!=next){
-		next->nextProcess->numThreads++;
-		taskNext = next_task(taskNext);
+	while (taskNext&&taskNext->pid!=task->pid){
+			if(DEBUG) printk("In while loop for task, numThreads:%d task->tgid:%d task->pid:%d taskNext->pid:%d\n", next->nextProcess->numThreads,task->tgid,task->pid,taskNext->pid);
+			next->nextProcess->numThreads++;
+			taskNext = next_task(taskNext);
 	}
 	if(DEBUG) printk("Exiting addProcess\n");
 
@@ -88,13 +110,29 @@ struct threadInfo* addThread(struct processInfo* parentProcess, struct task_stru
 	struct threadInfo *next;
 	int threadNum = 1;
 	int thread = 0;
-
+	
+	if(DEBUG) printk("entering addThread\n");
 	//check if there are any processes
 	if (!(parentProcess->headThread)){
-		parentProcess->headThread = vmalloc(sizeof(struct threadInfo));
+			if(DEBUG) printk("checking if there are any processes\n");
+			parentProcess->headThread = vmalloc(sizeof(struct threadInfo));
+			if(DEBUG) printk("vmallocing parentProcess->headThread\n");
+			//Initialize content
+			if(DEBUG) printk("Initilializing content\n");
+			parentProcess->headThread = vmalloc(sizeof(struct threadInfo));
+			parentProcess->headThread->pid = task->pid;
+			parentProcess->headThread->nextRandom = 0;
+			parentProcess->headThread->nextThread = NULL;
+
+            printk("seed:%lu\n", parentProcess->seed);
+			parentProcess->headThread->nextRandom = nextRandomGen(parentProcess->seed,1);
+			printk("random num:%lu\n", parentProcess->headThread->nextRandom);
+			if(DEBUG) printk("Exiting addThread \"headThread section\"\n");
+			return (parentProcess->headThread);
 	}
 	//Error if fails
 	if (!parentProcess->headThread){
+			if(DEBUG) printk("initilizing process failed\n");
 		return -EFAULT;
 	}
 
@@ -106,8 +144,10 @@ struct threadInfo* addThread(struct processInfo* parentProcess, struct task_stru
 	thread++;
 
 	//Initialize content
+	if(DEBUG) printk("Initilializing content\n");
 	next->nextThread = vmalloc(sizeof(struct threadInfo));
-	next->nextThread->pid = task->tgid;
+	if(DEBUG) printk("vmallocing next->nextThread\n");
+	next->nextThread->pid = task->pid;
 	next->nextThread->nextRandom = 0;
 	next->nextThread->nextThread = NULL;
 
@@ -121,12 +161,15 @@ struct processInfo* findProcess(struct task_struct* task){
 
 	struct processInfo *next = NULL;
 	
+	if(DEBUG) printk("Entering findProcess\n");
 	//Search through list of processess to find the matching process
 	next=headProcess;
 	while(next){
+			if(DEBUG) printk("Entering while loop in findProcess\n");
 		if (next->tgid==task->tgid){
 			return next;
 		}	
+		next = next->nextProcess;
 	}
 	//if process is not found then return NULL
 	return NULL;
@@ -137,12 +180,16 @@ struct threadInfo* findThread(struct processInfo* parentProcess, struct task_str
 	
 	struct threadInfo *next;
 	
+	if(DEBUG) printk("Entering findThread\n");
 	//Search through the task linked list for matching thread 
 	next=parentProcess->headThread;
 	while(next){
+		if(DEBUG) printk("findThread's while loop\n");
 		if (next->pid==task->pid){
 			return next;
 		}	
+
+		next = next->nextThread;
 	}
 	//if not found then null
 	return (NULL);
@@ -154,12 +201,12 @@ long nextRandomGen(long prevRandom, int numThreads){
 	
 	int i =0;
 	long nextRandom = prevRandom;
-
+	printk("prevRandom:%lu\n", prevRandom);
 	//Find the next random number
 	for (i=0;i<numThreads;i++){
 		nextRandom = (A_PRNG*nextRandom)%C_PRNG;
 	}	
-
+printk("nextRandom:%lu\n", nextRandom);
 	return nextRandom;
 }
 
@@ -173,9 +220,12 @@ int read_proc(char *buf,char **start,off_t offset,int count,int *eof,void *data 
 	struct processInfo* curProcess;
 	struct threadInfo* curThread;
 
+	if(DEBUG) printk("Entering read_proc\n");
+
 	//Find if current process exists; if not create it
 	curProcess = findProcess(current);
 	if (curProcess==NULL){
+		if(DEBUG) printk("current process does not exist\n");
 		curProcess=addProcess(current);
 		curProcess->seed = A_PRNG;		
 	}else{
@@ -186,21 +236,25 @@ int read_proc(char *buf,char **start,off_t offset,int count,int *eof,void *data 
 	//Find if current thread exists; if not create it
 	curThread = findThread(curProcess,current);
 	if (curThread==NULL){
+		if(DEBUG) printk("creating curret thread\n");
 		curThread=addThread(curProcess,current);		
 	}
-	curThread->nextRandom = nextRandomGen(curThread->nextRandom, curProcess->numThreads);
 	len = sprintf(outputBuffer, "%ld", curThread->nextRandom);
+	if(DEBUG) printk("nextRandom: %lu\n",curThread->nextRandom);
+	curThread->nextRandom = nextRandomGen(curThread->nextRandom, curProcess->numThreads);
+	memcpy(buf, outputBuffer, len);
 
-	if(copy_to_user(buf, outputBuffer, len)){
-		return -EFAULT;	
-	}
+	/*if()){*/
+		/*if(DEBUG) printk("copy to user failed\n");*/
+		/*return -EFAULT;	*/
+	/*}*/
 
+	if(DEBUG) printk("Leaving read_proc\n");
 	return len;
 }
 
 int write_proc(struct file *file,const char *buf,int count,void *data )
 {
-	if(DEBUG) 	printk("Entering write_proc\n");
 
 	char bufCopy[1001];
 	long seed = 0;
@@ -223,7 +277,7 @@ int write_proc(struct file *file,const char *buf,int count,void *data )
 		return -EFAULT;
 
 	//Set terminating character
-		bufCopy[count] = '\0';
+		/*bufCopy[count] = '\0';*/
 
 	//Pull out numbers from user
 	sscanf(bufCopy, "%lu",&seed);
@@ -250,6 +304,7 @@ int write_proc(struct file *file,const char *buf,int count,void *data )
 	if(DEBUG) printk("Exiting write proc\n");
 	memcpy(proc_data,bufCopy,count);
 
+	if(DEBUG) 	printk("Exiting write_proc seed:%lu s\n",seed);
 	return count;
 
 }
@@ -257,14 +312,14 @@ int write_proc(struct file *file,const char *buf,int count,void *data )
 void create_new_proc_entry(void)
 {
 
-	proc_write_entry = create_proc_entry("doop_entry",0666,NULL);
+	proc_write_entry = create_proc_entry(PROC_FILENAME,0666,NULL);
 	if(!proc_write_entry) {
 	    printk(KERN_INFO "Error creating proc entry");
 	    return -ENOMEM;
 	    }
 	proc_write_entry->read_proc = read_proc ;
 	proc_write_entry->write_proc = write_proc;
-	printk(KERN_INFO "proc initialized");
+	printk(KERN_INFO "proc initialized\n");
 
 }
 
@@ -278,7 +333,7 @@ int proc_init (void) {
 void proc_cleanup(void) {
 
 	printk(KERN_INFO " Inside cleanup_module\n");
-	remove_proc_entry("proc_entry",NULL);
+	remove_proc_entry(PROC_FILENAME,NULL);
 
 }
 

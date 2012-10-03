@@ -1,13 +1,13 @@
-cmd_/nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng5.mod.o := gcc -Wp,-MD,/nethome/vrajeevan3/proj1/actual_project/CS3210/.lfprng5.mod.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include -D__KERNEL__  -Iinclude  -include include/linux/autoconf.h -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -fno-delete-null-pointer-checks -O2  -mtune=generic -m64 -mno-red-zone -mcmodel=kernel -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -funit-at-a-time -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -maccumulate-outgoing-args -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -fstack-protector -fomit-frame-pointer -g  -fno-stack-protector -Wdeclaration-after-statement -Wno-pointer-sign    -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(lfprng5.mod)"  -D"KBUILD_MODNAME=KBUILD_STR(lfprng5)" -DMODULE -c -o /nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng5.mod.o /nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng5.mod.c
+cmd_/nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng12.o := gcc -Wp,-MD,/nethome/vrajeevan3/proj1/actual_project/CS3210/.lfprng12.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include -D__KERNEL__  -Iinclude  -include include/linux/autoconf.h -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -fno-delete-null-pointer-checks -O2  -mtune=generic -m64 -mno-red-zone -mcmodel=kernel -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -funit-at-a-time -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -maccumulate-outgoing-args -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -fstack-protector -fomit-frame-pointer -g  -fno-stack-protector -Wdeclaration-after-statement -Wno-pointer-sign    -DMODULE -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(lfprng12)"  -D"KBUILD_MODNAME=KBUILD_STR(lfprng12)" -c -o /nethome/vrajeevan3/proj1/actual_project/CS3210/.tmp_lfprng12.o /nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng12.c
 
-deps_/nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng5.mod.o := \
-  /nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng5.mod.c \
-    $(wildcard include/config/module/unload.h) \
+deps_/nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng12.o := \
+  /nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng12.c \
   include/linux/module.h \
     $(wildcard include/config/modules.h) \
     $(wildcard include/config/modversions.h) \
     $(wildcard include/config/unused/symbols.h) \
     $(wildcard include/config/generic/bug.h) \
+    $(wildcard include/config/module/unload.h) \
     $(wildcard include/config/kallsyms.h) \
     $(wildcard include/config/markers.h) \
     $(wildcard include/config/sysfs.h) \
@@ -281,9 +281,123 @@ deps_/nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng5.mod.o := \
     $(wildcard include/config/x86/generic.h) \
   include/asm/module.h \
   include/asm/module_64.h \
-  include/linux/vermagic.h \
-  include/linux/utsrelease.h \
+  include/asm/uaccess.h \
+  include/asm/uaccess_64.h \
+  include/linux/cdev.h \
+  include/linux/kdev_t.h \
+  include/linux/sched.h \
+    $(wildcard include/config/sched/debug.h) \
+    $(wildcard include/config/detect/softlockup.h) \
+    $(wildcard include/config/split/ptlock/cpus.h) \
+    $(wildcard include/config/keys.h) \
+    $(wildcard include/config/bsd/process/acct.h) \
+    $(wildcard include/config/taskstats.h) \
+    $(wildcard include/config/audit.h) \
+    $(wildcard include/config/inotify/user.h) \
+    $(wildcard include/config/posix/mqueue.h) \
+    $(wildcard include/config/fair/user/sched.h) \
+    $(wildcard include/config/schedstats.h) \
+    $(wildcard include/config/task/delay/acct.h) \
+    $(wildcard include/config/fair/group/sched.h) \
+    $(wildcard include/config/blk/dev/io/trace.h) \
+    $(wildcard include/config/sysvipc.h) \
+    $(wildcard include/config/security.h) \
+    $(wildcard include/config/rt/mutexes.h) \
+    $(wildcard include/config/task/xacct.h) \
+    $(wildcard include/config/cpusets.h) \
+    $(wildcard include/config/cgroups.h) \
+    $(wildcard include/config/futex.h) \
+    $(wildcard include/config/compat.h) \
+    $(wildcard include/config/fault/injection.h) \
+    $(wildcard include/config/latencytop.h) \
+  include/linux/capability.h \
+  include/linux/rbtree.h \
+  include/linux/mm_types.h \
+    $(wildcard include/config/mmu.h) \
+  include/linux/auxvec.h \
+  include/linux/prio_tree.h \
+  include/linux/completion.h \
+  include/asm/mmu.h \
+  include/asm/semaphore.h \
+  include/asm/semaphore_64.h \
+  include/asm/cputime.h \
+  include/asm-generic/cputime.h \
+  include/linux/sem.h \
+  include/linux/ipc.h \
+  include/asm/ipcbuf.h \
+  include/asm/sembuf.h \
+  include/linux/signal.h \
+  include/asm/signal.h \
+  include/asm-generic/signal.h \
+  include/asm/siginfo.h \
+  include/asm-generic/siginfo.h \
+  include/linux/securebits.h \
+  include/linux/fs_struct.h \
+  include/linux/pid.h \
+  include/linux/rcupdate.h \
+  include/linux/proportions.h \
+  include/linux/percpu_counter.h \
+  include/linux/seccomp.h \
+    $(wildcard include/config/seccomp.h) \
+  include/asm/seccomp.h \
+  include/asm/seccomp_64.h \
+  include/linux/unistd.h \
+  include/asm/unistd.h \
+  include/asm/unistd_64.h \
+  include/asm/ia32_unistd.h \
+  include/linux/futex.h \
+  include/linux/rtmutex.h \
+    $(wildcard include/config/debug/rt/mutexes.h) \
+  include/linux/plist.h \
+    $(wildcard include/config/debug/pi/list.h) \
+  include/linux/param.h \
+  include/linux/resource.h \
+  include/asm/resource.h \
+  include/asm-generic/resource.h \
+  include/linux/hrtimer.h \
+    $(wildcard include/config/high/res/timers.h) \
+  include/linux/task_io_accounting.h \
+    $(wildcard include/config/task/io/accounting.h) \
+  include/linux/latencytop.h \
+  include/linux/aio.h \
+  include/linux/aio_abi.h \
+  include/linux/uio.h \
+  include/linux/proc_fs.h \
+    $(wildcard include/config/proc/fs.h) \
+    $(wildcard include/config/proc/devicetree.h) \
+    $(wildcard include/config/proc/kcore.h) \
+  include/linux/fs.h \
+    $(wildcard include/config/dnotify.h) \
+    $(wildcard include/config/quota.h) \
+    $(wildcard include/config/inotify.h) \
+    $(wildcard include/config/epoll.h) \
+    $(wildcard include/config/auditsyscall.h) \
+    $(wildcard include/config/block.h) \
+    $(wildcard include/config/fs/xip.h) \
+    $(wildcard include/config/migration.h) \
+  include/linux/limits.h \
+  include/linux/ioctl.h \
+  include/asm/ioctl.h \
+  include/asm-generic/ioctl.h \
+  include/linux/dcache.h \
+    $(wildcard include/config/profiling.h) \
+  include/linux/namei.h \
+  include/linux/radix-tree.h \
+  include/linux/quota.h \
+  include/linux/dqblk_xfs.h \
+  include/linux/dqblk_v1.h \
+  include/linux/dqblk_v2.h \
+  include/linux/nfs_fs_i.h \
+  include/linux/nfs.h \
+  include/linux/sunrpc/msg_prot.h \
+  include/linux/fcntl.h \
+  include/asm/fcntl.h \
+  include/asm-generic/fcntl.h \
+    $(wildcard include/config/64bit.h) \
+  include/linux/err.h \
+  include/linux/magic.h \
+  include/linux/vmalloc.h \
 
-/nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng5.mod.o: $(deps_/nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng5.mod.o)
+/nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng12.o: $(deps_/nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng12.o)
 
-$(deps_/nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng5.mod.o):
+$(deps_/nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng12.o):

@@ -18,10 +18,9 @@ static const struct modversion_info ____versions[]
 __attribute_used__
 __attribute__((section("__versions"))) = {
 	{ 0x70591326, "struct_module" },
-	{ 0x6067a146, "memcpy" },
 	{ 0x859204af, "sscanf" },
 	{ 0x945bc6a7, "copy_from_user" },
-	{ 0xbe499d81, "copy_to_user" },
+	{ 0x6067a146, "memcpy" },
 	{ 0x1d26aa98, "sprintf" },
 	{ 0xd6ee688f, "vmalloc" },
 	{ 0x6f24cc5f, "create_proc_entry" },
@@ -35,4 +34,4 @@ __attribute__((section(".modinfo"))) =
 "depends=";
 
 
-MODULE_INFO(srcversion, "71B25AB5594EA7F329819EE");
+MODULE_INFO(srcversion, "B135C6E0F0125B9F2AAFD7A");
