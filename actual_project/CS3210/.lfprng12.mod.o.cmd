@@ -1,7 +1,7 @@
-cmd_/nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng12.mod.o := gcc -Wp,-MD,/nethome/vrajeevan3/proj1/actual_project/CS3210/.lfprng12.mod.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include -D__KERNEL__  -Iinclude  -include include/linux/autoconf.h -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -fno-delete-null-pointer-checks -O2  -mtune=generic -m64 -mno-red-zone -mcmodel=kernel -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -funit-at-a-time -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -maccumulate-outgoing-args -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -fstack-protector -fomit-frame-pointer -g  -fno-stack-protector -Wdeclaration-after-statement -Wno-pointer-sign    -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(lfprng12.mod)"  -D"KBUILD_MODNAME=KBUILD_STR(lfprng12)" -DMODULE -c -o /nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng12.mod.o /nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng12.mod.c
+cmd_/nethome/sdr3/proj1/actual_project/CS3210/lfprng12.mod.o := gcc -Wp,-MD,/nethome/sdr3/proj1/actual_project/CS3210/.lfprng12.mod.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-redhat-linux/4.1.2/include -D__KERNEL__  -Iinclude  -include include/linux/autoconf.h -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -fno-delete-null-pointer-checks -O2  -mtune=generic -m64 -mno-red-zone -mcmodel=kernel -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -funit-at-a-time -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -maccumulate-outgoing-args -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -fstack-protector -fomit-frame-pointer -g  -fno-stack-protector -Wdeclaration-after-statement -Wno-pointer-sign    -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(lfprng12.mod)"  -D"KBUILD_MODNAME=KBUILD_STR(lfprng12)" -DMODULE -c -o /nethome/sdr3/proj1/actual_project/CS3210/lfprng12.mod.o /nethome/sdr3/proj1/actual_project/CS3210/lfprng12.mod.c
 
-deps_/nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng12.mod.o := \
-  /nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng12.mod.c \
+deps_/nethome/sdr3/proj1/actual_project/CS3210/lfprng12.mod.o := \
+  /nethome/sdr3/proj1/actual_project/CS3210/lfprng12.mod.c \
     $(wildcard include/config/module/unload.h) \
   include/linux/module.h \
     $(wildcard include/config/modules.h) \
@@ -284,6 +284,6 @@ deps_/nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng12.mod.o := \
   include/linux/vermagic.h \
   include/linux/utsrelease.h \
 
-/nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng12.mod.o: $(deps_/nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng12.mod.o)
+/nethome/sdr3/proj1/actual_project/CS3210/lfprng12.mod.o: $(deps_/nethome/sdr3/proj1/actual_project/CS3210/lfprng12.mod.o)
 
-$(deps_/nethome/vrajeevan3/proj1/actual_project/CS3210/lfprng12.mod.o):
+$(deps_/nethome/sdr3/proj1/actual_project/CS3210/lfprng12.mod.o):

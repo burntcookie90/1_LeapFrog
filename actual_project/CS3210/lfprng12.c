@@ -124,9 +124,7 @@ struct threadInfo* addThread(struct processInfo* parentProcess, struct task_stru
 			parentProcess->headThread->nextRandom = 0;
 			parentProcess->headThread->nextThread = NULL;
 
-            printk("seed:%lu\n", parentProcess->seed);
 			parentProcess->headThread->nextRandom = nextRandomGen(parentProcess->seed,1);
-			printk("random num:%lu\n", parentProcess->headThread->nextRandom);
 			if(DEBUG) printk("Exiting addThread \"headThread section\"\n");
 			return (parentProcess->headThread);
 	}
@@ -201,12 +199,11 @@ long nextRandomGen(long prevRandom, int numThreads){
 	
 	int i =0;
 	long nextRandom = prevRandom;
-	printk("prevRandom:%lu\n", prevRandom);
+
 	//Find the next random number
 	for (i=0;i<numThreads;i++){
 		nextRandom = (A_PRNG*nextRandom)%C_PRNG;
 	}	
-printk("nextRandom:%lu\n", nextRandom);
 	return nextRandom;
 }
 
@@ -224,12 +221,14 @@ int read_proc(char *buf,char **start,off_t offset,int count,int *eof,void *data 
 
 	//Find if current process exists; if not create it
 	curProcess = findProcess(current);
+	if (DEBUG) curProcess = headProcess;
 	if (curProcess==NULL){
 		if(DEBUG) printk("current process does not exist\n");
 		curProcess=addProcess(current);
-		curProcess->seed = A_PRNG;		
+		curProcess->seed = A_PRNG;
+		if(DEBUG) printk("numThreads:%lu", curProcess->numThreads);		
 	}else{
-		printk("Process already exists. Process not being reseeded.");
+		printk("Process already exists. Process not being reseeded");
 	}
 
 
@@ -242,6 +241,8 @@ int read_proc(char *buf,char **start,off_t offset,int count,int *eof,void *data 
 	len = sprintf(outputBuffer, "%ld", curThread->nextRandom);
 	if(DEBUG) printk("nextRandom: %lu\n",curThread->nextRandom);
 	curThread->nextRandom = nextRandomGen(curThread->nextRandom, curProcess->numThreads);
+	if (DEBUG) printk("nextnextRandom %lu\n", curThread->nextRandom);
+	if (DEBUG) printk("thread %d", curThread->pid);
 	memcpy(buf, outputBuffer, len);
 
 	/*if()){*/
