@@ -3,20 +3,20 @@
 #include <stdlib.h>
 
 #define FILENAME "/proc/bleep_entry"
-#define DEBUG 1
+#define DEBUG 0
 
 char* getRandom(){
 		char* random;
 		FILE *fp;
 		random = malloc(sizeof(char*));
 
-		if(DEBUG) printf("Opening file for read\n");
+		/*if(DEBUG) printf("Opening file for read\n");*/
 
 		if((fp = fopen(FILENAME,"r"))){
-				if(DEBUG) printf("Opened file for read\n");
+				/*if(DEBUG) printf("Opened file for read\n");*/
 				/*random = fscanf(fp,"%ld",&random);*/
 				fgets(random,100,fp);
-				printf("Random is: %s\n", random);
+				/*printf("Random is: %s\n", random);*/
 				fclose(fp);
 				return random;
 		}
@@ -37,14 +37,18 @@ void setSeed(long seed){
 }
 
 int main(){
-		omp_set_num_threads(2);
-#pragma omp parallel 
+		int th_id;
+		omp_set_num_threads(20);
+#pragma omp parallel
 {
-	setSeed(1);
+	setSeed(10);
 }
-#pragma omp parallel 
+#pragma omp parallel private(th_id)
 {
-	printf("main(): %s\n",getRandom());
+	th_id = omp_get_thread_num();
+	printf("\nThread: %d number:: %s\n",th_id,getRandom());
+	printf("\nThread: %d number:: %s\n",th_id,getRandom());
+	printf("\nThread: %d number:: %s\n",th_id,getRandom());
 }
 	 
 	return 0;
