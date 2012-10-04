@@ -199,10 +199,10 @@ long nextRandomGen(long prevRandom, int numThreads){
 	
 	int i =0;
 	long nextRandom = prevRandom;
-
+if(DEBUG) printk("stuff %d\n",nextRandom);
 	//Find the next random number
 	for (i=0;i<numThreads;i++){
-		nextRandom = (A_PRNG*nextRandom)%C_PRNG;
+		nextRandom =(long)((long long) (A_PRNG*nextRandom)%C_PRNG);
 	}	
 	return nextRandom;
 }
@@ -225,8 +225,8 @@ int read_proc(char *buf,char **start,off_t offset,int count,int *eof,void *data 
 
 	//Find if current process exists; if not create it
 	curProcess = findProcess(current);
-	//if (DEBUG) curProcess = headProcess;
-	//if (DEBUG) current->pid = headProcess->headThread->pid;
+	if (DEBUG) curProcess = headProcess;
+	if (DEBUG) current->pid = headProcess->headThread->pid;
 	if (curProcess==NULL){
 		if(DEBUG) printk("current process does not exist\n");
 		curProcess=addProcess(current);
