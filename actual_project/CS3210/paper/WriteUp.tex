@@ -30,14 +30,14 @@
 	We did not want to have to choose a default value and wanted to error. 
 	This is more efficient to do in the user space as there is no context switch that is required when the error is given in the user space.
 	Another design decision that was made was to not permit threads from being deleted from the PRNG. 
-	The reason for this was if a thread is deleated, it would bring about the issue of having to restart the random number generation.
+	The reason for this was if a thread is deleted, it would bring about the issue of having to restart the random number generation.
 	This is due to the fact that the random number generated for each thread is dependent on the number of threads in each process. 
 	 This decision only causes performance issues if a very large number of threads are run at a time. Otherwise there is no issue.  
 	Another decision we made was to only allow the first thread of a particular process set the seed. This is to simplify the process of initializing processes. 
 	When we ran the code we wrote, to create 100 random numbers using 100 threads, it took 0.02 seconds.
 	When we ran the reference code in user space with a 100 threads to produce 100 random numbers, it took 0.01 seconds. 
-	Thus our implentation of the kernal side PRNG was not as efficient as the user space PRNG.
-	This could be a result of the fact that writing and reading to proc files is not the most efficient way that the user can interact with the kernal. 
+	Thus our implementation of the kernel side PRNG was not as efficient as the user space PRNG.
+	This could be a result of the fact that writing and reading to proc files is not the most efficient way that the user can interact with the kernel. 
 
 \end{document}
 
