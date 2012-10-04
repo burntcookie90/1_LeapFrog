@@ -58,13 +58,13 @@ struct processInfo* addProcess(struct task_struct* task){
 			headProcess->headThread = NULL;
 			headProcess->numThreads = 1;
 			if(DEBUG) printk("Initilialized headprocess\n");
-			
+		/*	
 			taskNext = next_task(task);
 			while (taskNext&&(taskNext->pid!=task->pid)){
 					if(DEBUG) printk("In while loop for head process, numThreads:%d task->tgid:%d task->pid:%d taskNext->pid:%d\n",headProcess->numThreads,task->tgid,task->pid,taskNext->pid);
 					headProcess->numThreads++;
 					taskNext = next_task(taskNext);
-			}
+			}*/
 			if(DEBUG) printk("Exiting head process initialization\n");
 
 			return (headProcess);
@@ -109,7 +109,7 @@ struct threadInfo* addThread(struct processInfo* parentProcess, struct task_stru
 	
 	struct threadInfo *next;
 	int threadNum = 1;
-	int thread = 0;
+	int thread = 1;
 	
 	if(DEBUG) printk("entering addThread\n");
 	//check if there are any processes
@@ -303,7 +303,8 @@ int write_proc(struct file *file,const char *buf,int count,void *data )
 	}else{
 		printk("Process already exists. Process not being reseeded.");
 		curProcess->numThreads++;
-        /*	taskNext = next_task(current);
+		printk("threads:%d\n", curProcess->numThreads);        
+/*	taskNext = next_task(current);
         	while (taskNext&&taskNext->pid!=current->pid){
                         curProcess->numThreads++;
 			printk("threads:\n",curProcess->numThreads );
