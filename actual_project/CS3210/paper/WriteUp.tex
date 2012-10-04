@@ -11,7 +11,7 @@
 	We have implemented the leap frog method in kernel code.
 	Executing the leap frog method in kernel space versus userspace leads to timing and performances boosts.
 
-	The basis of our implementation depends on each thread writing to the proc file before any reads are done.
+	The basis of our implementation depends on each thread of a process writing to the proc file before any reads are done.
 	Each time a write is done, the code checks if the thread's parent process is already stored as a process that is already requesting random numbers.
 	If it is not, the thread's parent process is saved in a linked list.
 	The linked list then points to a linked list of all the threads, that the process owns, that are requesting random numbers.
@@ -29,4 +29,9 @@
 	This decision was made so that if a non numerical value was given the module would either have to error or choose a default value for the seed.
 	We did not want to have to choose a default value and wanted to error. 
 	This is more efficient to do in the user space as there is no context switch that is required when the error is given in the user space.
+	Another design decision that was made was to not permit threads from being deleted from the PRNG. 
+	The reason for this was if a thread is deleated, it would bring about the issue of having to restart the random number generation.
+	This is due to the fact that the random number generated for each thread is dependent on the number of threads in each process. 
+	 This decision only causes performance issues if a very large number of threads are run at a time. Otherwise there is no issue.  
 \end{document}
+
