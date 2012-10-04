@@ -1,4 +1,3 @@
-
 ifneq ($(KERNELRELEASE),) 
    obj-m := lfprng12.o
 else 
@@ -12,5 +11,7 @@ default:
 endif 
 clean:
 	$(MAKE) -C $(KERNELDIR) M=$(PWD) clean
+	rm Test
 
-
+test:
+	gcc -fopenmp -Wall test.c -o Test
