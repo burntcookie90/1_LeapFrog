@@ -1,7 +1,0 @@
-float lfrng(){
-		float val;
-		FILE* LF = fopen("/proc/lfprng","r");
-		fscanf(LF,"%f",val);
-		fclose(LF);
-		return val;
-}
