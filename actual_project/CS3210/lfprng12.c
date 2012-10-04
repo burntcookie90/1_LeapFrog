@@ -92,13 +92,13 @@ struct processInfo* addProcess(struct task_struct* task){
 	next->nextProcess->headThread = NULL;
 	next->nextProcess->numThreads = 1;
 	if(DEBUG) printk("Initilialized content\n");
-	
+/*	
 	taskNext = next_task(task);
 	while (taskNext&&taskNext->pid!=task->pid){
 			if(DEBUG) printk("In while loop for task, numThreads:%d task->tgid:%d task->pid:%d taskNext->pid:%d\n", next->nextProcess->numThreads,task->tgid,task->pid,taskNext->pid);
 			next->nextProcess->numThreads++;
 			taskNext = next_task(taskNext);
-	}
+	}*/
 	if(DEBUG) printk("Exiting addProcess\n");
 
 	return (next->nextProcess);
@@ -177,7 +177,7 @@ struct processInfo* findProcess(struct task_struct* task){
 struct threadInfo* findThread(struct processInfo* parentProcess, struct task_struct* task){
 	
 	struct threadInfo *next;
-	
+ 	
 	if(DEBUG) printk("Entering findThread\n");
 	//Search through the task linked list for matching thread 
 	next=parentProcess->headThread;
@@ -225,8 +225,8 @@ int read_proc(char *buf,char **start,off_t offset,int count,int *eof,void *data 
 
 	//Find if current process exists; if not create it
 	curProcess = findProcess(current);
-	if (DEBUG) curProcess = headProcess;
-	if (DEBUG) current->pid = headProcess->headThread->pid;
+//	if (DEBUG) curProcess = headProcess;
+//	if (DEBUG) current->pid = headProcess->headThread->pid;
 	if (curProcess==NULL){
 		if(DEBUG) printk("current process does not exist\n");
 		curProcess=addProcess(current);
@@ -268,6 +268,9 @@ int write_proc(struct file *file,const char *buf,int count,void *data )
 	/*int len = 0;*/
 	struct processInfo* curProcess;
 	struct threadInfo* curThread;
+	struct task_struct* taskNext;
+
+
 
 	//Nothing to write
 	if (count==0){
@@ -299,6 +302,14 @@ int write_proc(struct file *file,const char *buf,int count,void *data )
 		curProcess->seed = seed;		
 	}else{
 		printk("Process already exists. Process not being reseeded.");
+		curProcess->numThreads++;
+        /*	taskNext = next_task(current);
+        	while (taskNext&&taskNext->pid!=current->pid){
+                        curProcess->numThreads++;
+			printk("threads:\n",curProcess->numThreads );
+                        taskNext = next_task(taskNext);
+        	}*/
+
 	}
 
 	//Find if current thread exists; if not create it
