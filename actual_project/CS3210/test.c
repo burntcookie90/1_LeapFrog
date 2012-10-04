@@ -38,7 +38,7 @@ void setSeed(long seed){
 
 int main(){
 		int th_id;
-		omp_set_num_threads(20);
+		omp_set_num_threads(10);
 #pragma omp parallel
 {
 	setSeed(10);
